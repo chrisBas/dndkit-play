@@ -66,9 +66,9 @@ export const Container = forwardRef<HTMLDivElement, Props>(
         onClick={onClick}
         tabIndex={onClick ? 0 : undefined}
       >
-        {label ? (
+        {label !== undefined ? (
           <div className={styles.Header}>
-            {label}
+            <div>{label}</div>
             <div className={styles.Actions}>
               {onRemove ? <Remove onClick={onRemove} /> : undefined}
               <Handle {...handleProps} />
