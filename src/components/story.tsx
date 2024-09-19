@@ -13,62 +13,38 @@ import { createSnapModifier } from "@dnd-kit/modifiers";
 import type { Coordinates } from "@dnd-kit/utilities";
 import { useMemo, useState } from "react";
 
-import { Axis, Draggable } from "./draggable/draggable";
+import { Draggable } from "./draggable/draggable";
 import { Grid } from "./grid/grid";
-import { Wrapper } from "./wrapper/wrapper";
 
 export function Story() {
   const [gridSize, setGridSize] = useState(30);
   const style = {
     alignItems: "flex-start",
   };
-  const buttonStyle = {
-    marginLeft: gridSize - 20 + 1,
-    marginTop: gridSize - 20 + 1,
-    width: gridSize * 8 - 1,
-    height: gridSize * 2 - 1,
-  };
   const snapToGrid = useMemo(() => createSnapModifier(gridSize), [gridSize]);
 
   return (
     <>
-      <DraggableStory
-        label={`Snapping to ${gridSize}px increments`}
-        modifiers={[snapToGrid]}
-        style={style}
-        buttonStyle={buttonStyle}
-        key={gridSize}
-      />
+      <DraggableStory modifiers={[snapToGrid]} style={style} key={gridSize} />
       <Grid size={gridSize} onSizeChange={setGridSize} />
     </>
   );
 }
 
-const defaultCoordinates = {
-  x: 0,
-  y: 0,
-};
-
 interface Props {
   activationConstraint?: PointerActivationConstraint;
-  axis?: Axis;
   handle?: boolean;
   modifiers?: Modifiers;
-  buttonStyle?: React.CSSProperties;
   style?: React.CSSProperties;
-  label?: string;
 }
 
-function DraggableStory({
-  activationConstraint,
-  axis,
-  handle,
-  label = "Go ahead, drag me.",
-  modifiers,
-  style,
-  buttonStyle,
-}: Props) {
-  const [{ x, y }, setCoordinates] = useState<Coordinates>(defaultCoordinates);
+function DraggableStory({ activationConstraint, modifiers, style }: Props) {
+  const [coordinates, setCoordinates] = useState<
+    { id: number; coord: Coordinates }[]
+  >([
+    { id: 1, coord: { x: 0, y: 0 } },
+    { id: 2, coord: { x: 4 * 30, y: 0 * 30 } },
+  ]);
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint,
   });
@@ -81,67 +57,71 @@ function DraggableStory({
   return (
     <DndContext
       sensors={sensors}
-      onDragEnd={({ delta }) => {
-        setCoordinates(({ x, y }) => {
-          return {
-            x: x + delta.x,
-            y: y + delta.y,
-          };
+      onDragEnd={(event) => {
+        const {
+          active: { id },
+          delta,
+        } = event;
+        setCoordinates((prev) => {
+          return prev.map((coord) => {
+            if (coord.id === id) {
+              return {
+                ...coord,
+                coord: {
+                  ...coord.coord,
+                  x: coord.coord.x + delta.x,
+                  y: coord.coord.y + delta.y,
+                },
+              };
+            }
+            return coord;
+          });
         });
       }}
       modifiers={modifiers}
     >
-      <Wrapper>
-        <DraggableItem
-          axis={axis}
-          label={label}
-          handle={handle}
-          top={y}
-          left={x}
-          style={style}
-          buttonStyle={buttonStyle}
-        />
-      </Wrapper>
+      {coordinates.map(({ id, coord: { x, y } }) => {
+        return (
+          <DraggableItem key={id} id={id} top={y} left={x} style={style}>
+            <div
+              style={{
+                width: `${3 * 30}px`,
+                height: `${1 * 30}px`,
+              }}
+            >
+              <div>Drag Me</div>
+            </div>
+          </DraggableItem>
+        );
+      })}
     </DndContext>
   );
 }
 
 interface DraggableItemProps {
-  label: string;
-  handle?: boolean;
+  id: number;
   style?: React.CSSProperties;
-  buttonStyle?: React.CSSProperties;
-  axis?: Axis;
   top?: number;
   left?: number;
+  children: React.ReactNode;
 }
 
-function DraggableItem({
-  axis,
-  label,
-  style,
-  top,
-  left,
-  handle,
-  buttonStyle,
-}: DraggableItemProps) {
+function DraggableItem({ id, style, top, left, children }: DraggableItemProps) {
   const { attributes, isDragging, listeners, setNodeRef, transform } =
     useDraggable({
-      id: "draggable",
+      id: id,
     });
 
   return (
     <Draggable
       ref={setNodeRef}
       dragging={isDragging}
-      handle={handle}
-      label={label}
       listeners={listeners}
       style={{ ...style, top, left }}
-      buttonStyle={buttonStyle}
       transform={transform}
-      axis={axis}
       {...attributes}
-    />
+    >
+      {children}
+    </Draggable>
   );
 }
