@@ -47,6 +47,18 @@ export const Story = () => {
             height: 1,
           },
         },
+        {
+          id: "A4",
+          component: () => {
+            return <h2>A4</h2>;
+          },
+          location: {
+            x: 2,
+            y: 0,
+            width: 1,
+            height: 1,
+          },
+        },
       ],
     },
     {
@@ -89,6 +101,30 @@ export const Story = () => {
             height: 1,
           },
         },
+        {
+          id: "B4",
+          component: () => {
+            return <h2>B4</h2>;
+          },
+          location: {
+            x: 2,
+            y: 0,
+            width: 1,
+            height: 1,
+          },
+        },
+        {
+          id: "B5",
+          component: () => {
+            return <h2>B5</h2>;
+          },
+          location: {
+            x: 2,
+            y: 0,
+            width: 1,
+            height: 1,
+          },
+        },
       ],
     },
   ]);
@@ -97,7 +133,7 @@ export const Story = () => {
     <MultipleContainers
       containers={containers}
       setContainers={setContainers}
-      columns={3}
+      columns={8}
       strategy={rectSortingStrategy}
       wrapperStyle={() => ({
         width: 150,

@@ -548,6 +548,7 @@ export function MultipleContainers({
                       disabled={isSortingContainer}
                       key={value.id}
                       id={value.id}
+                      value={value.component()}
                       index={index}
                       handle={handle}
                       style={getItemStyles}
@@ -718,6 +719,7 @@ function Trash({ id }: { id: UniqueIdentifier }) {
 interface SortableItemProps {
   containerId: UniqueIdentifier;
   id: UniqueIdentifier;
+  value: React.ReactNode;
   index: number;
   handle: boolean;
   disabled?: boolean;
@@ -730,6 +732,7 @@ interface SortableItemProps {
 function SortableItem({
   disabled,
   id,
+  value,
   index,
   handle,
   renderItem,
@@ -757,7 +760,7 @@ function SortableItem({
   return (
     <Item
       ref={disabled ? undefined : setNodeRef}
-      value={id}
+      value={value}
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
