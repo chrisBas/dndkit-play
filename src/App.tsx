@@ -1,5 +1,5 @@
 import "./App.css";
-import { Story } from "./components/story";
+import { Story } from "./story";
 
 function App() {
   return (

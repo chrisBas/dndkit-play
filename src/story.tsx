@@ -1,11 +1,11 @@
 import { rectSortingStrategy } from "@dnd-kit/sortable";
-import { MultipleContainers } from "./multiplecontainers";
+import { MultipleContainers } from "./components/multiplecontainers";
 
 export const Story = () => {
   return (
     <MultipleContainers
-      columns={2}
-      itemCount={5}
+      columns={4}
+      itemCount={3}
       strategy={rectSortingStrategy}
       wrapperStyle={() => ({
         width: 150,
